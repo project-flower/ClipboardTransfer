@@ -69,7 +69,6 @@
     <Compile Include="Events\ErrorOccurred.cs" />
     <Compile Include="Events\ReceiveCompleted.cs" />
     <Compile Include="Events\SendCompleted.cs" />
-    <Compile Include="Events\SendReceiveCompleted.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>

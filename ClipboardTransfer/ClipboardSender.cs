@@ -132,7 +132,6 @@ namespace ClipboardTransfer
 
             if (dataLength < 1)
             {
-                string md5 = "";
                 string fileName = stream.Name;
                 EndSending();
 
@@ -146,7 +145,7 @@ namespace ClipboardTransfer
                         string.Format("The data has been sent, but the clipboard could not be emptied.{0}{0}{1}", newLine, exception.Message)));
                 }
 
-                SendCompleted(this, new SendCompletedEventArgs(fileName, md5));
+                SendCompleted(this, new SendCompletedEventArgs(fileName));
                 return;
             }
 

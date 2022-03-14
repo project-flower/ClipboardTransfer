@@ -1,10 +1,23 @@
-﻿namespace ClipboardTransfer.Events
+﻿using System;
+
+namespace ClipboardTransfer.Events
 {
-    public class SendCompletedEventArgs : SendReceiveCompletedEventArgs
+    public class SendCompletedEventArgs : EventArgs
     {
-        public SendCompletedEventArgs(string fileName, string md5) : base (fileName, md5)
+        #region Public Fields
+
+        public readonly string FileName;
+
+        #endregion
+
+        #region Public Methods
+
+        public SendCompletedEventArgs(string fileName)
         {
+            FileName = fileName;
         }
+
+        #endregion
     }
 
     public delegate void SendCompletedEventHandler(object sender, SendCompletedEventArgs e);
