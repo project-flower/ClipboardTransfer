@@ -1,6 +1,7 @@
 ﻿using ClipboardTransfer.Events;
 using ClipboardTransfer.Properties;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -190,6 +191,25 @@ namespace ClipboardTransfer
         private void buttonSend_Click(object sender, EventArgs e)
         {
             BeginSend();
+        }
+
+        private void buttonShowFile_Click(object sender, EventArgs e)
+        {
+            string fileName = textBoxFileName.Text;
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
+
+            try
+            {
+                Process.Start("explorer.exe", $"/select,\"{fileName}\"");
+            }
+            catch (Exception exception)
+            {
+                ShowErrorMessage(exception);
+            }
         }
 
         private void clipboardReceiver_ReceiveCompleted(object sender, ReceiveCompletedEventArgs e)
