@@ -142,7 +142,13 @@ namespace ClipboardTransfer
 
         private byte[] Convert(string value)
         {
-            var result = new byte[value.Length / 2];
+            if (string.IsNullOrEmpty(value)) return null;
+
+            int length = value.Length;
+
+            if ((length % 2) != 0) return null;
+
+            var result = new byte[length / 2];
 
             for (int i = 0; i < result.Length; ++i)
             {
