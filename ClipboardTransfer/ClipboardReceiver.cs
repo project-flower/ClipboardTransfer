@@ -15,8 +15,8 @@ namespace ClipboardTransfer
         private bool skipNext = false;
         private FileStream stream = null;
         private int timeout = 1;
-        private readonly Timer timer = new Timer();
-        private int wait = 100;
+        private readonly Timer timerClear = new Timer();
+        private readonly Timer timerTimeout = new Timer();
 
         #endregion
 
@@ -34,7 +34,8 @@ namespace ClipboardTransfer
 
         public ClipboardReceiver()
         {
-            timer.Tick += new EventHandler(timer_Tick);
+            timerClear.Tick += new EventHandler(timerClear_Tick);
+            timerTimeout.Tick += new EventHandler(timerTimeout_Tick);
         }
 
         public void BeginReceive(string fileName, int timeout, int wait)
@@ -43,16 +44,17 @@ namespace ClipboardTransfer
 
             stream = new FileStream(fileName, FileMode.Create);
             this.timeout = timeout;
-            this.wait = wait;
-            timer.Interval = InitialTimeout;
+            timerClear.Interval = wait;
+            timerTimeout.Interval = InitialTimeout;
             receiving = true;
-            timer.Start();
+            timerTimeout.Start();
             Enabled = true;
         }
 
         public void EndReceiving()
         {
-            timer.Stop();
+            timerClear.Stop();
+            timerTimeout.Stop();
             Enabled = false;
 
             if (stream != null)
@@ -79,7 +81,7 @@ namespace ClipboardTransfer
         {
             if (!receiving) return;
 
-            timer.Stop();
+            timerTimeout.Stop();
             byte[] result;
 
             try
@@ -145,32 +147,12 @@ namespace ClipboardTransfer
                 return;
             }
 
-            Action action = delegate { ClearClipboard(); };
-            Owner.Invoke(action);
+            timerClear.Start();
         }
 
         #endregion
 
         #region Private Methods
-
-        private void ClearClipboard()
-        {
-            System.Threading.Thread.Sleep(wait);
-
-            try
-            {
-                skipNext = true;
-                ClipboardWriter.Empty();
-            }
-            catch (Exception exception)
-            {
-                EndReceiving();
-                ErrorOccurred(this, new ErrorOccurredEventArgs(string.Format("Failed to clear the clipboard.{0}{0}{1}", newLine, exception.Message)));
-            }
-
-            timer.Interval = timeout;
-            timer.Start();
-        }
 
         private byte[] Convert(string value)
         {
@@ -184,7 +166,26 @@ namespace ClipboardTransfer
             return result;
         }
 
-        private void timer_Tick(object sender, EventArgs e)
+        private void timerClear_Tick(object sender, EventArgs e)
+        {
+            timerClear.Stop();
+
+            try
+            {
+                skipNext = true;
+                ClipboardWriter.Empty();
+            }
+            catch (Exception exception)
+            {
+                EndReceiving();
+                ErrorOccurred(this, new ErrorOccurredEventArgs(string.Format("Failed to clear the clipboard.{0}{0}{1}", newLine, exception.Message)));
+            }
+
+            timerTimeout.Interval = timeout;
+            timerTimeout.Start();
+        }
+
+        private void timerTimeout_Tick(object sender, EventArgs e)
         {
             EndReceiving();
             ErrorOccurred(this, new ErrorOccurredEventArgs("The data could not be received."));

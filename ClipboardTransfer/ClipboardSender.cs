@@ -15,8 +15,8 @@ namespace ClipboardTransfer
         private bool sending = false;
         private FileStream stream = null;
         private int timeout = 1;
-        private readonly Timer timer = new Timer();
-        private int wait = 100;
+        private readonly Timer timerSend = new Timer();
+        private readonly Timer timerTimeout = new Timer();
 
         #endregion
 
@@ -33,7 +33,8 @@ namespace ClipboardTransfer
 
         public ClipboardSender()
         {
-            timer.Tick += new EventHandler(timer_Tick);
+            timerSend.Tick += new EventHandler(timerSend_Tick);
+            timerTimeout.Tick += new EventHandler(timerTimeout_Tick);
         }
 
         public void BeginSend(string fileName, int timeout, int bufferSize, int wait)
@@ -43,14 +44,15 @@ namespace ClipboardTransfer
             stream = new FileStream(fileName, FileMode.Open);
             this.timeout = timeout;
             this.bufferSize = bufferSize;
-            this.wait = wait;
+            timerSend.Interval = wait;
             Enabled = true;
-            Send();
+            timerSend.Start();
         }
 
         public void EndSending()
         {
-            timer.Stop();
+            timerSend.Stop();
+            timerTimeout.Stop();
             Enabled = false;
 
             if (stream != null)
@@ -77,7 +79,7 @@ namespace ClipboardTransfer
         {
             if (!sending) return;
 
-            timer.Stop();
+            timerTimeout.Stop();
             string message = string.Empty;
             bool skip = false;
 
@@ -112,8 +114,7 @@ namespace ClipboardTransfer
                 return;
             }
 
-            Action action = delegate { Send(); };
-            Owner.Invoke(action);
+            timerSend.Start();
         }
 
         #endregion
@@ -125,10 +126,10 @@ namespace ClipboardTransfer
             return string.Join(string.Empty, bytes.Select(n => n.ToString("X2")));
         }
 
-        private void Send()
+        private void timerSend_Tick(object sender, EventArgs e)
         {
-            timer.Stop();
-            System.Threading.Thread.Sleep(wait);
+            timerSend.Stop();
+            timerTimeout.Stop();
             var buffer = new byte[bufferSize];
             int dataLength = stream.Read(buffer, 0, buffer.Length);
 
@@ -169,8 +170,8 @@ namespace ClipboardTransfer
                         break;
                 }
 
-                timer.Interval = timeout;
-                timer.Start();
+                timerTimeout.Interval = timeout;
+                timerTimeout.Start();
             }
             catch (Exception exception)
             {
@@ -179,7 +180,7 @@ namespace ClipboardTransfer
             }
         }
 
-        private void timer_Tick(object sender, EventArgs e)
+        private void timerTimeout_Tick(object sender, EventArgs e)
         {
             EndSending();
             ErrorOccurred(this, new ErrorOccurredEventArgs("Data reception could not be confirmed."));
