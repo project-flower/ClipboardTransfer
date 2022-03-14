@@ -89,26 +89,12 @@ namespace ClipboardTransfer
                 switch (TransmissionMode)
                 {
                     case TransmissionMode.Binary:
-                        result = (Clipboard.GetDataObject().GetData(typeof(byte[])) as byte[]);
+                        result = ClipboardReader.ReadBytes();
                         break;
 
                     case TransmissionMode.Strings:
                     default:
-                        string text = string.Empty;
-
-                        for (int i = 0; i < 100; ++i)
-                        {
-                            try
-                            {
-                                text = Clipboard.GetText();
-                                break;
-                            }
-                            catch
-                            {
-                                System.Threading.Thread.Sleep(100);
-                            }
-                        }
-
+                        string text = ClipboardReader.ReadText();
                         result = Convert(text);
                         break;
                 }

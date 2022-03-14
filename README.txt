@@ -70,6 +70,10 @@ ClipboardTransfer
     設定可能値: 1 ～ 4194304
   ・InitialTimeout
     受信を開始してから最初のデータを待機する時間(ミリ秒)を設定します。
+  ・RetryInterval
+    クリップボード読み書きが失敗した時に再試行する間隔(ミリ秒)を設定します。
+  ・RetryMax
+    クリップボード読み書きが失敗した時に再試行する回数の上限を設定します。
   ・TimeoutSeconds
     Timeout: の初期値を設定します。
     設定可能値: 1 ～ 99999999
@@ -78,3 +82,31 @@ ClipboardTransfer
   ・TransmissionWait
     Wait: の初期値を設定します。
     設定可能値: 0 ～ 10000
+
+    <configuration>
+      <userSettings>
+        <ClipboardTransfer.Properties.Settings>
+          <setting name="BufferSize" serializeAs="String">
+            <value>1048576</value>
+          </setting>
+          <setting name="InitialTimeout" serializeAs="String">
+            <value>60000</value>
+          </setting>
+          <setting name="RetryInterval" serializeAs="String">
+            <value>100</value>
+          </setting>
+          <setting name="RetryMax" serializeAs="String">
+            <value>10</value>
+          </setting>
+          <setting name="TimeoutSeconds" serializeAs="String">
+            <value>10</value>
+          </setting>
+          <setting name="TransmissionMode" serializeAs="String">
+            <value>Strings</value>
+          </setting>
+          <setting name="TransmissionWait" serializeAs="String">
+            <value>10</value>
+          </setting>
+        </ClipboardTransfer.Properties.Settings>
+      </userSettings>
+    </configuration>

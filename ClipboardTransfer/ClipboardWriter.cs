@@ -1,4 +1,5 @@
-﻿using NativeApi;
+﻿using ClipboardTransfer.Properties;
+using NativeApi;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -9,14 +10,29 @@ namespace ClipboardTransfer
 {
     internal static class ClipboardWriter
     {
+        #region Internal Fields
+
+        internal static readonly int RetryInterval;
+        internal static readonly int RetryMax;
+
+        #endregion
+
+        #region Static Constructor
+
+        static ClipboardWriter()
+        {
+            Settings settings = Settings.Default;
+            RetryInterval = settings.RetryInterval;
+            RetryMax = settings.RetryMax;
+        }
+
+        #endregion
+
+        #region Internal Methods
+
         internal static void Empty()
         {
             WriteText(string.Empty);
-        }
-
-        internal static void Empty(int retryInterval, int timeout)
-        {
-            WriteText(string.Empty, retryInterval, timeout);
         }
 
         internal static void WriteBytes(byte[] bytes)
@@ -24,19 +40,22 @@ namespace ClipboardTransfer
             throw new Exception("The binary writing is not currently supported.");
         }
 
-        internal static void WriteText(string text, int retryInterval = 100, int timeout = 1000)
+        internal static void WriteText(string text)
         {
             bool opened = false;
 
-            for (int elapsed = 0; elapsed < timeout; elapsed += retryInterval)
+            for (int i = 0; i < RetryMax; ++i)
             {
+                if (i != 0)
+                {
+                    Thread.Sleep(RetryInterval);
+                }
+
                 if (User32.OpenClipboard(IntPtr.Zero))
                 {
                     opened = true;
                     break;
                 }
-
-                Thread.Sleep(retryInterval);
             }
 
             if (!opened)
@@ -76,5 +95,7 @@ namespace ClipboardTransfer
                 if (!clipboardClosed) User32.CloseClipboard();
             }
         }
+
+        #endregion
     }
 }

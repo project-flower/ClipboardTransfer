@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClipboardReader.cs" />
     <Compile Include="ClipboardReceiver.cs">
       <SubType>Component</SubType>
     </Compile>

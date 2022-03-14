@@ -88,17 +88,14 @@ namespace ClipboardTransfer
                 switch (TransmissionMode)
                 {
                     case TransmissionMode.Binary:
-                        if (Clipboard.GetDataObject() is DataObject dataObject)
-                        {
-                            skip = ((dataObject.GetData(typeof(byte[])) is byte[] data) && (data.Length > 0));
-                        }
-
+                        byte[] data = ClipboardReader.ReadBytes();
+                        skip = ((data != null) && (data.Length > 0));
                         break;
 
                     case TransmissionMode.Strings:
                     default:
-                        string text = Clipboard.GetText(TextDataFormat.UnicodeText);
-                        skip = (!string.IsNullOrEmpty(text));
+                        string text = ClipboardReader.ReadText();
+                        skip = !string.IsNullOrEmpty(text);
                         break;
                 }
             }
