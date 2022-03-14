@@ -46,6 +46,8 @@ namespace ClipboardTransfer
                 textBoxFileName.Text = fileName;
             }
 
+            textBoxMd5.Text = string.Empty;
+
             if (ShowMessage(
                 $"Please start sending from the sender within {clipboardReceiver.InitialTimeout / 1000} seconds after clicking OK.",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
