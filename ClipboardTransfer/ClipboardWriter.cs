@@ -32,7 +32,7 @@ namespace ClipboardTransfer
 
         internal static void Empty()
         {
-            WriteText(string.Empty);
+            WriteText(string.Empty, IntPtr.Zero);
         }
 
         internal static void WriteBytes(byte[] bytes)
@@ -40,7 +40,7 @@ namespace ClipboardTransfer
             throw new Exception("The binary writing is not currently supported.");
         }
 
-        internal static void WriteText(string text)
+        internal static void WriteText(string text, IntPtr hWndNewOwner)
         {
             bool opened = false;
 
@@ -51,7 +51,7 @@ namespace ClipboardTransfer
                     Thread.Sleep(RetryInterval);
                 }
 
-                if (User32.OpenClipboard(IntPtr.Zero))
+                if (User32.OpenClipboard(hWndNewOwner))
                 {
                     opened = true;
                     break;
@@ -63,14 +63,8 @@ namespace ClipboardTransfer
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            bool clipboardClosed = false;
-
             try
             {
-                string nullTerminated = text + "\0";
-                byte[] bytes = Encoding.Unicode.GetBytes(nullTerminated);
-                IntPtr hGlobal = Marshal.AllocHGlobal(bytes.Length);
-
                 if (!User32.EmptyClipboard())
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -78,6 +72,8 @@ namespace ClipboardTransfer
 
                 if (string.IsNullOrEmpty(text)) return;
 
+                byte[] bytes = Encoding.Unicode.GetBytes(text + "\0");
+                IntPtr hGlobal = Marshal.AllocHGlobal(bytes.Length);
                 Marshal.Copy(bytes, 0, hGlobal, bytes.Length);
 
                 if (User32.SetClipboardData(CF.UNICODETEXT, hGlobal) == IntPtr.Zero)
@@ -88,11 +84,11 @@ namespace ClipboardTransfer
                 }
 
                 User32.CloseClipboard();
-                clipboardClosed = true;
+                opened = false;
             }
             finally
             {
-                if (!clipboardClosed) User32.CloseClipboard();
+                if (opened) User32.CloseClipboard();
             }
         }
 

@@ -163,7 +163,7 @@ namespace ClipboardTransfer
                         break;
                     case TransmissionMode.Strings:
                     default:
-                        ClipboardWriter.WriteText(Convert(buffer_));
+                        ClipboardWriter.WriteText(Convert(buffer_), Owner.Handle);
                         break;
                 }
 
