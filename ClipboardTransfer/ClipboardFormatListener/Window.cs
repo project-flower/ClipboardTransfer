@@ -1,11 +1,13 @@
 ﻿using ClipboardTransfer.Events;
 using NativeApi;
 using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace ClipboardTransfer
 {
-    public abstract partial class ClipboardViewer
+    public abstract partial class ClipboardFormatListener
     {
         #region Private Classes
 
@@ -16,13 +18,12 @@ namespace ClipboardTransfer
 
             private Form form;
             private bool messageReceived;
-            private IntPtr nextHandle;
 
             #endregion
 
             #region Public Properties
 
-            public event ClipboardEventHandler DrawClipboard = delegate { };
+            public event ClipboardEventHandler ClipboardUpdate = delegate { };
 
             #endregion
 
@@ -32,32 +33,35 @@ namespace ClipboardTransfer
             {
                 form = null;
                 messageReceived = false;
-                nextHandle = IntPtr.Zero;
             }
 
-            public void JoinClipboardChain(Form form)
+            public void JoinClipboardFormatListener(Form form)
             {
                 if (form == this.form)
                 {
                     return;
                 }
 
-                LeaveClipboardChain();
+                LeaveClipboardFormatListener();
                 this.form = form;
                 form.HandleDestroyed += form_HandleDestroyed;
                 AssignHandle(this.form.Handle);
                 messageReceived = false;
-                nextHandle = User32.SetClipboardViewer(Handle);
+
+                if (!User32.AddClipboardFormatListener(Handle))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
             }
 
-            public void LeaveClipboardChain()
+            public void LeaveClipboardFormatListener()
             {
                 if (form == null)
                 {
                     return;
                 }
 
-                User32.ChangeClipboardChain(Handle, nextHandle);
+                User32.RemoveClipboardFormatListener(Handle);
                 ReleaseHandle();
                 form.HandleDestroyed -= form_HandleDestroyed;
                 form = null;
@@ -69,36 +73,15 @@ namespace ClipboardTransfer
 
             protected override void WndProc(ref Message m)
             {
-                switch (m.Msg)
+                if (m.Msg == WM.CLIPBOARDUPDATE)
                 {
-                    case WM.DRAWCLIPBOARD:
-                        if (!messageReceived)
-                        {
-                            // SetClipboardViewer 直後のメッセージは、クリップボードの更新ではないので無視
-                            messageReceived = true;
-                            break;
-                        }
+                    if (!messageReceived)
+                    {
+                        // AddClipboardFormatListener 直後のメッセージは、クリップボードの更新ではないので無視
+                        messageReceived = true;
+                    }
 
-                        DrawClipboard(this, new ClipboardEventArgs());
-
-                        if (nextHandle != IntPtr.Zero)
-                        {
-                            User32.PostMessage(nextHandle, m.Msg, m.WParam, m.LParam);
-                        }
-
-                        break;
-
-                    case WM.CHANGECBCHAIN:
-                        if (m.WParam == nextHandle)
-                        {
-                            nextHandle = m.LParam;
-                        }
-                        else if (nextHandle != IntPtr.Zero)
-                        {
-                            User32.PostMessage(nextHandle, m.Msg, m.WParam, m.LParam);
-                        }
-
-                        break;
+                    ClipboardUpdate(this, new ClipboardEventArgs());
                 }
 
                 base.WndProc(ref m);
@@ -110,7 +93,7 @@ namespace ClipboardTransfer
 
             private void form_HandleDestroyed(object sender, EventArgs e)
             {
-                LeaveClipboardChain();
+                LeaveClipboardFormatListener();
             }
 
             #endregion

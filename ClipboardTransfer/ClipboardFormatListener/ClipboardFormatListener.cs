@@ -8,7 +8,7 @@ namespace ClipboardTransfer
 {
     #region Public Classes
 
-    public abstract partial class ClipboardViewer : Component
+    public abstract partial class ClipboardFormatListener : Component
     {
         #region Private Fields
 
@@ -63,13 +63,13 @@ namespace ClipboardTransfer
                 return;
             }
 
-            window.JoinClipboardChain(form);
+            window.JoinClipboardFormatListener(form);
             enabled = true;
         }
 
         private void LeaveClipboardChain()
         {
-            window.LeaveClipboardChain();
+            window.LeaveClipboardFormatListener();
             enabled = false;
         }
 
@@ -131,11 +131,11 @@ namespace ClipboardTransfer
 
                 // デザイナで Enabled を true にした時に、owner が null で動作しないため、
                 // 再度設定する。
-                window.LeaveClipboardChain();
+                window.LeaveClipboardFormatListener();
 
                 if (enabled)
                 {
-                    window.JoinClipboardChain(form);
+                    window.JoinClipboardFormatListener(form);
                 }
             }
         }
@@ -144,32 +144,32 @@ namespace ClipboardTransfer
 
         #region Public Methods
 
-        public ClipboardViewer()
+        public ClipboardFormatListener()
         {
             enabled = false;
             window = new Window();
-            window.DrawClipboard += DrawClipboard;
+            window.ClipboardUpdate += ClipboardUpdate;
         }
 
-        ~ClipboardViewer()
+        ~ClipboardFormatListener()
         {
-            window.LeaveClipboardChain();
-            window.DrawClipboard -= DrawClipboard;
+            window.LeaveClipboardFormatListener();
+            window.ClipboardUpdate -= ClipboardUpdate;
         }
 
         #endregion
 
         #region Protected Methods
 
-        protected abstract void OnDrawClipboard();
+        protected abstract void OnClipboardUpdate();
 
         #endregion
 
         #region Private Methods
 
-        private void DrawClipboard(object sender, ClipboardEventArgs e)
+        private void ClipboardUpdate(object sender, ClipboardEventArgs e)
         {
-            OnDrawClipboard();
+            OnClipboardUpdate();
         }
 
         #endregion

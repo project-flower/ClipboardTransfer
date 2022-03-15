@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace ClipboardTransfer
 {
-    public class ClipboardSender : ClipboardViewer
+    public class ClipboardSender : ClipboardFormatListener
     {
         #region Private Fields
 
@@ -75,7 +75,7 @@ namespace ClipboardTransfer
 
         #region Protected Methods
 
-        protected override void OnDrawClipboard()
+        protected override void OnClipboardUpdate()
         {
             if (!sending) return;
 
