@@ -32,7 +32,7 @@ ClipboardTransfer
      (テキスト伝送モードの場合は1文字につき2バイトのため、最大2,097,152文字(サロゲートペア等含まず))
 
   5. Wait: に1回の転送でのウェイト(待機時間)をミリ秒で指定して下さい。
-     ウェイトを小さくすると転送が速くなりますが、小さすぎると送信側と転送先の通信が失敗する場合があります。
+     ウェイトを小さくすると転送が速くなりますが、小さすぎると転送元と転送先の通信が失敗する場合があります。
 
   6. まず転送先で Receive をクリックします。
      File: が空の場合、ここで Save as ... のダイアログが開くので、
@@ -42,21 +42,21 @@ ClipboardTransfer
   7. "Please start sending from the sender within * seconds after clicking OK."
      と表示されたら、一旦そのままにします。
 
-  8. 送信側で Send をクリックします。
+  8. 転送元で Send をクリックします。
      File: がからの場合、ここで Open のダイアログが開くので、
-     送信するファイルを選択して OK をクリックして下さい。
+     転送するファイルを選択して OK をクリックして下さい。
 
   9. "Start reception on the receiving side. Click OK when it starts."
      と表示されたら、転送先で OK をクリックして、受信を開始し、
-     送信側で OK をクリックして送信を開始して下さい。
+     転送元で OK をクリックして送信を開始して下さい。
      受信を開始する前に送信を開始すると転送が失敗します。
      転送が完了するまで、それぞれのデスクトップではクリップボードの操作を行わないで下さい。
      転送中にクリップボードが操作された場合、不正なデータが混入し、ファイルの内容が一致しなくなる場合があります。
 
-  10. 転送中はタイトルバーに転送先には"Receiving..."、送信側には"Sending..."と表示されます。
+  10. 転送中はタイトルバーに転送先には"Receiving..."、転送元には"Sending..."と表示されます。
       転送を途中でキャンセルする場合は、Cancel をクリックして下さい。
 
-  11. 転送が完了すると、送信側には"Data transmission is complete. Check the MD5 value of the destination."と表示され、
+  11. 転送が完了すると、転送元には"Data transmission is complete. Check the MD5 value of the destination."と表示され、
       転送先には"Data reception is complete. Check the MD5 value."と表示されます。
       MD5: にそれぞれの MD5 値が表示されるので、転送元と転送先の値が同じであることを確認して下さい。
       一致していない場合、ファイルは正常に転送されていません。
