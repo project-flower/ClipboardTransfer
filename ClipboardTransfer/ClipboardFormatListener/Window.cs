@@ -3,15 +3,14 @@ using NativeApi;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Windows.Forms;
 
 namespace ClipboardTransfer
 {
     public abstract partial class ClipboardFormatListener
     {
-        #region Private Classes
-
-        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         private class Window : NativeWindow
         {
             #region Private Fields
@@ -23,7 +22,7 @@ namespace ClipboardTransfer
 
             #region Public Properties
 
-            public event ClipboardEventHandler ClipboardUpdate = delegate { };
+            public event ClipboardUpdateEventHandler ClipboardUpdate = delegate { };
 
             #endregion
 
@@ -81,7 +80,7 @@ namespace ClipboardTransfer
                         messageReceived = true;
                     }
 
-                    ClipboardUpdate(this, new ClipboardEventArgs());
+                    ClipboardUpdate(this, new ClipboardUpdateEventArgs());
                 }
 
                 base.WndProc(ref m);
@@ -98,7 +97,5 @@ namespace ClipboardTransfer
 
             #endregion
         }
-
-        #endregion
     }
 }

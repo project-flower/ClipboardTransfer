@@ -8,6 +8,8 @@ namespace NativeApi
     /// </summary>
     public static partial class CF
     {
+        #region Public Fields
+
         public const uint TEXT = 1;
         public const uint BITMAP = 2;
         public const uint METAFILEPICT = 3;
@@ -26,10 +28,14 @@ namespace NativeApi
         public const uint LOCALE = 16;
         public const uint DIBV5 = 17;
         public const uint MAX = 18;
+
+        #endregion
     }
 
     public static partial class User32
     {
+        #region Public Methods
+
         /// <summary>
         /// Places the given window in the system-maintained clipboard format listener list.
         /// </summary>
@@ -91,10 +97,16 @@ namespace NativeApi
         /// </returns>
         [DllImport(AssemblyName, SetLastError = true)]
         public static extern IntPtr SetClipboardData(uint uFormat, IntPtr hMem);
+
+        #endregion
     }
 
     public static partial class WM
     {
+        #region Public Fields
+
         public const int CLIPBOARDUPDATE = 0x031D;
+
+        #endregion
     }
 }

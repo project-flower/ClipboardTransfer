@@ -62,7 +62,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ClipboardWriter.cs" />
-    <Compile Include="Events\DrawClipboard.cs" />
+    <Compile Include="Events\ClipboardUpdate.cs" />
     <Compile Include="ClipboardFormatListener\Window.cs">
       <SubType>Component</SubType>
     </Compile>

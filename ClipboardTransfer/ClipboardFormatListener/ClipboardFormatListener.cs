@@ -6,8 +6,6 @@ using System.Windows.Forms;
 
 namespace ClipboardTransfer
 {
-    #region Public Classes
-
     public abstract partial class ClipboardFormatListener : Component
     {
         #region Private Fields
@@ -56,53 +54,6 @@ namespace ClipboardTransfer
             }
         }
 
-        private void JoinClipboardChain()
-        {
-            if (!(owner is Form form))
-            {
-                return;
-            }
-
-            window.JoinClipboardFormatListener(form);
-            enabled = true;
-        }
-
-        private void LeaveClipboardChain()
-        {
-            window.LeaveClipboardFormatListener();
-            enabled = false;
-        }
-
-        public override ISite Site
-        {
-            get
-            {
-                return base.Site;
-            }
-
-            set
-            {
-                base.Site = value;
-
-                if (value == null)
-                {
-                    return;
-                }
-
-                if (!(value.GetService(typeof(IDesignerHost)) is IDesignerHost designerHost))
-                {
-                    return;
-                }
-
-                IComponent rootComponent = designerHost.RootComponent;
-
-                if (rootComponent is ContainerControl)
-                {
-                    owner = rootComponent as ContainerControl;
-                }
-            }
-        }
-
         public ContainerControl Owner
         {
             get
@@ -140,6 +91,36 @@ namespace ClipboardTransfer
             }
         }
 
+        public override ISite Site
+        {
+            get
+            {
+                return base.Site;
+            }
+
+            set
+            {
+                base.Site = value;
+
+                if (value == null)
+                {
+                    return;
+                }
+
+                if (!(value.GetService(typeof(IDesignerHost)) is IDesignerHost designerHost))
+                {
+                    return;
+                }
+
+                IComponent rootComponent = designerHost.RootComponent;
+
+                if (rootComponent is ContainerControl)
+                {
+                    owner = rootComponent as ContainerControl;
+                }
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -167,13 +148,28 @@ namespace ClipboardTransfer
 
         #region Private Methods
 
-        private void ClipboardUpdate(object sender, ClipboardEventArgs e)
+        private void ClipboardUpdate(object sender, ClipboardUpdateEventArgs e)
         {
             OnClipboardUpdate();
         }
 
+        private void JoinClipboardChain()
+        {
+            if (!(owner is Form form))
+            {
+                return;
+            }
+
+            window.JoinClipboardFormatListener(form);
+            enabled = true;
+        }
+
+        private void LeaveClipboardChain()
+        {
+            window.LeaveClipboardFormatListener();
+            enabled = false;
+        }
+
         #endregion
     }
-
-    #endregion
 }

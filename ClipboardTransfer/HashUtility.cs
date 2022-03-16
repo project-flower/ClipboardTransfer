@@ -7,7 +7,9 @@ namespace ClipboardTransfer
 {
     internal static class HashUtility
     {
-        public static string HashFromFile(string fileName)
+        #region Internal Methods
+
+        internal static string HashFromFile(string fileName)
         {
             try
             {
@@ -22,7 +24,7 @@ namespace ClipboardTransfer
             }
         }
 
-        public static string HashFromStream(Stream stream)
+        internal static string HashFromStream(Stream stream)
         {
             try
             {
@@ -43,5 +45,7 @@ namespace ClipboardTransfer
                 return $"({exception.Message})";
             }
         }
+
+        #endregion
     }
 }
