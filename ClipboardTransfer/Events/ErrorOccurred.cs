@@ -12,7 +12,7 @@ namespace ClipboardTransfer.Events
 
         #region Public Methods
 
-        internal ErrorOccurredEventArgs(string message)
+        public ErrorOccurredEventArgs(string message)
         {
             Message = message;
         }
