@@ -1,5 +1,7 @@
 ﻿using ClipboardTransfer.Events;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,7 +15,7 @@ namespace ClipboardTransfer
         private int bufferSize = 1;
         private readonly string newLine = Environment.NewLine;
         private bool sending = false;
-        private FileStream stream = null;
+        private Stream stream = null;
         private int timeout = 1;
         private readonly Timer timerSend = new Timer();
         private readonly Timer timerTimeout = new Timer();
@@ -37,16 +39,42 @@ namespace ClipboardTransfer
             timerTimeout.Tick += new EventHandler(timerTimeout_Tick);
         }
 
-        public void BeginSend(string fileName, int timeout, int bufferSize, int wait)
+        public void BeginSend(Image image, int timeout, int bufferSize, int wait)
         {
             if (sending) throw new InvalidOperationException("ClipboardSender is sending.");
 
-            stream = new FileStream(fileName, FileMode.Open);
+            stream = new MemoryStream();
+
+            try
+            {
+                image.Save(stream, ImageFormat.Png);
+                stream.Position = 0;
+            }
+            catch
+            {
+                stream.Dispose();
+                stream = null;
+                throw;
+            }
+
+            BeginSend(timeout, bufferSize, wait);
+        }
+
+        private void BeginSend(int timeout, int bufferSize, int wait)
+        {
             this.timeout = timeout;
             this.bufferSize = bufferSize;
             timerSend.Interval = wait;
             Enabled = true;
             timerSend.Start();
+        }
+
+        public void BeginSend(string fileName, int timeout, int bufferSize, int wait)
+        {
+            if (sending) throw new InvalidOperationException("ClipboardSender is sending.");
+
+            stream = new FileStream(fileName, FileMode.Open);
+            BeginSend(timeout, bufferSize, wait);
         }
 
         public void EndSending()
@@ -133,7 +161,6 @@ namespace ClipboardTransfer
 
             if (dataLength < 1)
             {
-                string fileName = stream.Name;
                 EndSending();
 
                 try
@@ -146,7 +173,7 @@ namespace ClipboardTransfer
                         string.Format("The data has been sent, but the clipboard could not be emptied.{0}{0}{1}", newLine, exception.Message)));
                 }
 
-                SendCompleted(this, new SendCompletedEventArgs(fileName));
+                SendCompleted(this, new SendCompletedEventArgs());
                 return;
             }
 

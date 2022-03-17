@@ -4,17 +4,10 @@ namespace ClipboardTransfer.Events
 {
     public class SendCompletedEventArgs : EventArgs
     {
-        #region Public Fields
-
-        public readonly string FileName;
-
-        #endregion
-
         #region Public Methods
 
-        public SendCompletedEventArgs(string fileName)
+        public SendCompletedEventArgs()
         {
-            FileName = fileName;
         }
 
         #endregion

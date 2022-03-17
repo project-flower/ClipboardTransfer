@@ -3,6 +3,8 @@ using ClipboardTransfer.Properties;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ClipboardTransfer
@@ -37,25 +39,40 @@ namespace ClipboardTransfer
 
         private void BeginReceive()
         {
-            string fileName = textBoxFileName.Text;
+            string fileName = default;
+            bool asImage = checkBoxAsImage.Checked;
 
-            if (string.IsNullOrEmpty(fileName))
+            if (!asImage)
             {
-                if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+                fileName = textBoxFileName.Text;
 
-                fileName = saveFileDialog.FileName;
-                textBoxFileName.Text = fileName;
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                    fileName = saveFileDialog.FileName;
+                    textBoxFileName.Text = fileName;
+                }
+
+                textBoxMd5.Text = string.Empty;
             }
 
-            textBoxMd5.Text = string.Empty;
+            if (ShowMessage($"Please start sending from the sender within {(clipboardReceiver.InitialTimeout / 1000)} seconds after clicking OK.", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
 
-            if (ShowMessage(
-                $"Please start sending from the sender within {clipboardReceiver.InitialTimeout / 1000} seconds after clicking OK.",
-                MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
+            int timeout = (int)(numericUpDownTimeout.Value * 1000);
+            int wait = (int)numericUpDownWait.Value;
 
             try
             {
-                clipboardReceiver.BeginReceive(fileName, (int)(numericUpDownTimeout.Value * 1000), (int)numericUpDownWait.Value);
+                if (asImage)
+                {
+                    clipboardReceiver.BeginReceiveImage(timeout, wait);
+                }
+                else
+                {
+                    clipboardReceiver.BeginReceive(fileName, timeout, wait);
+                }
+
                 SetStatus("Receiving...");
                 EnableControls(false);
             }
@@ -67,30 +84,77 @@ namespace ClipboardTransfer
 
         private void BeginSend()
         {
-            string fileName = textBoxFileName.Text;
+            bool asImage = checkBoxAsImage.Checked;
+            string fileName = default;
+            string message;
 
-            if (string.IsNullOrEmpty(fileName))
+            if (asImage)
             {
-                if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+                message = $"Set the image to the Clipboard,{newLine}and start reception on the receiving side.{newLine}Click OK when it starts.";
+            }
+            else
+            {
+                fileName = textBoxFileName.Text;
 
-                fileName = openFileDialog.FileName;
-                textBoxFileName.Text = fileName;
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
+                    fileName = openFileDialog.FileName;
+                    textBoxFileName.Text = fileName;
+                }
+
+                message = $"Start reception on the receiving side.{newLine}Click OK when it starts.";
             }
 
-            if (ShowMessage(
-                $"Start reception on the receiving side.{newLine}Click OK when it starts.", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning)
-                != DialogResult.OK) return;
+            if (ShowMessage(message, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
+
+            Image image = null;
 
             try
             {
-                textBoxMd5.Text = HashUtility.HashFromFile(fileName);
-                clipboardSender.BeginSend(fileName, (int)(numericUpDownTimeout.Value * 1000), (int)numericUpDownBufferSize.Value, (int)numericUpDownWait.Value);
+                string md5;
+
+                if (asImage)
+                {
+                    image = Clipboard.GetImage();
+
+                    using (Stream stream = new MemoryStream())
+                    {
+                        image.Save(stream, ImageFormat.Png);
+                        stream.Position = 0;
+                        md5 = HashUtility.HashFromStream(stream);
+                    }
+                }
+                else
+                {
+                    md5 = HashUtility.HashFromFile(fileName);
+                }
+
+                textBoxMd5.Text = md5;
+                int timeout = (int)(numericUpDownTimeout.Value * 1000);
+                int bufferSize = (int)numericUpDownBufferSize.Value;
+                int wait = (int)numericUpDownWait.Value;
+
+                if (asImage)
+                {
+                    clipboardSender.BeginSend(image, timeout, bufferSize, wait);
+                }
+                else
+                {
+                    clipboardSender.BeginSend(fileName, timeout, bufferSize, wait);
+                }
+
                 SetStatus("Sending...");
                 EnableControls(false);
             }
             catch (Exception exception)
             {
                 ShowErrorMessage(exception);
+            }
+            finally
+            {
+                if (image != null) image.Dispose();
             }
         }
 
@@ -210,6 +274,14 @@ namespace ClipboardTransfer
             {
                 ShowErrorMessage(exception);
             }
+        }
+
+        private void checkBoxAsImage_CheckedChanged(object sender, EventArgs e)
+        {
+            bool enabled = !checkBoxAsImage.Checked;
+            labelFile.Enabled = enabled;
+            textBoxFileName.Enabled = enabled;
+            buttonShowFile.Enabled = enabled;
         }
 
         private void clipboardReceiver_ReceiveCompleted(object sender, ReceiveCompletedEventArgs e)

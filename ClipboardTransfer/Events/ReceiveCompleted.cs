@@ -6,16 +6,14 @@ namespace ClipboardTransfer.Events
     {
         #region Public Fields
 
-        public readonly string FileName;
         public readonly string Md5;
 
         #endregion
 
         #region Public Methods
 
-        public ReceiveCompletedEventArgs(string fileName, string md5)
+        public ReceiveCompletedEventArgs(string md5)
         {
-            FileName = fileName;
             Md5 = md5;
         }
 
