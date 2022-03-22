@@ -139,8 +139,9 @@ namespace ClipboardTransfer
                     return;
                 }
 
+                ReceiveCompletedEventArgs eventArgs = GenerateReceiveCompletedEventArgs();
                 EndReceiving();
-                ReceiveCompleted(this, GenerateReceiveCompletedEventArgs());
+                ReceiveCompleted(this, eventArgs);
                 return;
             }
 
