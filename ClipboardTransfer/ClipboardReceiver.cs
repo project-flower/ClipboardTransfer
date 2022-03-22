@@ -128,6 +128,7 @@ namespace ClipboardTransfer
                 if (skipNext)
                 {
                     skipNext = false;
+                    timerTimeout.Start();
                     return;
                 }
 
