@@ -8,6 +8,9 @@
     <Setting Name="InitialTimeout" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">60000</Value>
     </Setting>
+    <Setting Name="NoConfirmation" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="RetryInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>

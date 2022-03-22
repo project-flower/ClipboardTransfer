@@ -57,7 +57,9 @@ namespace ClipboardTransfer
                 textBoxMd5.Text = string.Empty;
             }
 
-            if (ShowMessage($"Please start sending from the sender within {(clipboardReceiver.InitialTimeout / 1000)} seconds after clicking OK.", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
+            if (!checkBoxNoConfirmation.Checked &&
+                ShowMessage($"Please start sending from the sender within {(clipboardReceiver.InitialTimeout / 1000)} seconds after clicking OK.",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
 
             int timeout = (int)(numericUpDownTimeout.Value * 1000);
             int wait = (int)numericUpDownWait.Value;
@@ -107,7 +109,8 @@ namespace ClipboardTransfer
                 message = $"Start reception on the receiving side.{newLine}Click OK when it starts.";
             }
 
-            if (ShowMessage(message, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
+            if (!checkBoxNoConfirmation.Checked &&
+                ShowMessage(message, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK) return;
 
             Image image = null;
 

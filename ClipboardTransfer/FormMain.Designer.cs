@@ -43,6 +43,7 @@
             this.labelWait = new System.Windows.Forms.Label();
             this.numericUpDownWait = new System.Windows.Forms.NumericUpDown();
             this.labelMSec = new System.Windows.Forms.Label();
+            this.checkBoxNoConfirmation = new System.Windows.Forms.CheckBox();
             this.checkBoxAsImage = new System.Windows.Forms.CheckBox();
             this.buttonSend = new System.Windows.Forms.Button();
             this.buttonReceive = new System.Windows.Forms.Button();
@@ -232,14 +233,27 @@
             this.labelMSec.TabIndex = 14;
             this.labelMSec.Text = "msec.";
             // 
+            // checkBoxNoConfirmation
+            // 
+            this.checkBoxNoConfirmation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBoxNoConfirmation.AutoSize = true;
+            this.checkBoxNoConfirmation.Checked = global::ClipboardTransfer.Properties.Settings.Default.NoConfirmation;
+            this.checkBoxNoConfirmation.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::ClipboardTransfer.Properties.Settings.Default, "NoConfirmation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBoxNoConfirmation.Location = new System.Drawing.Point(681, 70);
+            this.checkBoxNoConfirmation.Name = "checkBoxNoConfirmation";
+            this.checkBoxNoConfirmation.Size = new System.Drawing.Size(107, 16);
+            this.checkBoxNoConfirmation.TabIndex = 15;
+            this.checkBoxNoConfirmation.Text = "No Confirmation";
+            this.checkBoxNoConfirmation.UseVisualStyleBackColor = true;
+            // 
             // checkBoxAsImage
             // 
             this.checkBoxAsImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxAsImage.AutoSize = true;
-            this.checkBoxAsImage.Location = new System.Drawing.Point(716, 92);
+            this.checkBoxAsImage.Location = new System.Drawing.Point(681, 92);
             this.checkBoxAsImage.Name = "checkBoxAsImage";
             this.checkBoxAsImage.Size = new System.Drawing.Size(72, 16);
-            this.checkBoxAsImage.TabIndex = 15;
+            this.checkBoxAsImage.TabIndex = 16;
             this.checkBoxAsImage.Text = "As &Image";
             this.checkBoxAsImage.UseVisualStyleBackColor = true;
             this.checkBoxAsImage.CheckedChanged += new System.EventHandler(this.checkBoxAsImage_CheckedChanged);
@@ -250,7 +264,7 @@
             this.buttonSend.Location = new System.Drawing.Point(551, 114);
             this.buttonSend.Name = "buttonSend";
             this.buttonSend.Size = new System.Drawing.Size(75, 23);
-            this.buttonSend.TabIndex = 16;
+            this.buttonSend.TabIndex = 17;
             this.buttonSend.Text = "&Send";
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
@@ -261,7 +275,7 @@
             this.buttonReceive.Location = new System.Drawing.Point(632, 114);
             this.buttonReceive.Name = "buttonReceive";
             this.buttonReceive.Size = new System.Drawing.Size(75, 23);
-            this.buttonReceive.TabIndex = 17;
+            this.buttonReceive.TabIndex = 18;
             this.buttonReceive.Text = "&Receive";
             this.buttonReceive.UseVisualStyleBackColor = true;
             this.buttonReceive.Click += new System.EventHandler(this.buttonReceive_Click);
@@ -273,7 +287,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(713, 114);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 18;
+            this.buttonCancel.TabIndex = 19;
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -312,6 +326,7 @@
             this.Controls.Add(this.buttonReceive);
             this.Controls.Add(this.buttonSend);
             this.Controls.Add(this.checkBoxAsImage);
+            this.Controls.Add(this.checkBoxNoConfirmation);
             this.Controls.Add(this.labelMSec);
             this.Controls.Add(this.numericUpDownWait);
             this.Controls.Add(this.labelWait);
@@ -354,6 +369,7 @@
         private System.Windows.Forms.Label labelWait;
         private System.Windows.Forms.NumericUpDown numericUpDownWait;
         private System.Windows.Forms.Label labelMSec;
+        private System.Windows.Forms.CheckBox checkBoxNoConfirmation;
         private System.Windows.Forms.CheckBox checkBoxAsImage;
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.Button buttonReceive;
