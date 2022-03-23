@@ -165,13 +165,27 @@ namespace ClipboardTransfer
         {
             foreach (Control control in Controls)
             {
-                control.Enabled = ((control != buttonCancel) ? value : !value);
+                SetEnabled(control, ((control != buttonCancel) ? value : !value));
             }
 
             if (value)
             {
+                EnableFileOptions();
                 SetStatus(string.Empty);
             }
+        }
+
+        private void EnableFileOptions()
+        {
+            bool enabled = !checkBoxAsImage.Checked;
+            SetEnabled(labelFile, enabled);
+            SetEnabled(textBoxFileName, enabled);
+            SetEnabled(buttonShowFile, enabled);
+        }
+
+        private void SetEnabled(Control control, bool value)
+        {
+            if (control.Enabled != value) control.Enabled = value;
         }
 
         private void SetStatus(string status)
@@ -281,10 +295,7 @@ namespace ClipboardTransfer
 
         private void checkBoxAsImage_CheckedChanged(object sender, EventArgs e)
         {
-            bool enabled = !checkBoxAsImage.Checked;
-            labelFile.Enabled = enabled;
-            textBoxFileName.Enabled = enabled;
-            buttonShowFile.Enabled = enabled;
+            EnableFileOptions();
         }
 
         private void clipboardReceiver_ReceiveCompleted(object sender, ReceiveCompletedEventArgs e)
